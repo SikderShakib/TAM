@@ -120,11 +120,11 @@ function render(){
  $('cCollected').textContent='৳ '+total.toLocaleString('en-IN');
  $('cDue').textContent='৳ '+Math.max(0,150000-total).toLocaleString('en-IN');
  $('cBar').style.width=Math.min(100,total/150000*100)+'%';
- var th='<th>সদস্য</th><th>ফোন</th>'; MONTHS.forEach(function(mo){th+='<th>'+mo.l+'</th>'});
+ var th='<th>সিরিয়াল</th><th>সদস্য</th><th>ফোন</th>'; MONTHS.forEach(function(mo){th+='<th>'+mo.l+'</th>'});
  th+='<th>মোট জমা</th><th>বাকি</th><th>অ্যাকশন</th>'; $('theadRow').innerHTML=th;
- var html=''; db.members.forEach(function(m){
+ var html=''; db.members.forEach(function(m,idx){
   var tot=memberTotal(m);
-  html+='<tr><td><b>'+esc(m.name)+'</b></td><td>'+esc(m.phone||'-')+'</td>';
+  html+='<tr><td>'+(idx+1)+'</td><td><b>'+esc(m.name)+'</b></td><td>'+esc(m.phone||'-')+'</td>';
   MONTHS.forEach(function(mo){var paid=m.payments&&m.payments[mo.k];html+='<td class="'+(paid?'paid':'unpaid')+'" onclick="togglePay(\''+m.id+'\',\''+mo.k+'\')">'+(paid?'✓ ৫০০':'—')+'</td>'});
   html+='<td><b>৳ '+tot.toLocaleString('en-IN')+'</b> ('+memberPaidCount(m)+'/১২)</td><td>৳ '+(6000-tot).toLocaleString('en-IN')+'</td>';
   html+='<td><button class="secondary" onclick="editMember(\''+m.id+'\')">এডিট</button> <button class="danger" onclick="deleteMember(\''+m.id+'\')">মুছুন</button></td></tr>';
