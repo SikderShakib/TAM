@@ -51,7 +51,7 @@ small{color:#64748b} .flex{display:flex;gap:8px;flex-wrap:wrap;align-items:cente
 <input id="mPhone" placeholder="ফোন নম্বর (ঐচ্ছিক)">
 <button onclick="addMember()">+ যোগ করুন</button>
 </div>
-<p><small>টিপস: মাসের ঘরে ক্লিক করলেই ৫০০ টাকা জমা / বাতিল হবে। সবুজ = জমা হয়েছে, লাল = বাকি।</small></p>
+<p><small>টিপস: মাসের ঘরে ক্লিক করলেই ৫০০ টাকা জমা / বাতিল হবে। সবুজ = জমা হয়েছে, লাল = বাকি।</small></p><div class="flex"><button class="secondary" onclick="fetchSheet()">🔄 শিট থেকে রিফ্রেশ</button><span id="sheetStatus"><small>শিট থেকে লাইভ লোড হচ্ছে…</small></span></div>
 </div>
 
 <div class="panel">
@@ -104,6 +104,7 @@ var MONTHS=[
  {k:'2027-03',l:'মার্চ ২৭'}];
 var MONTH_FEE=500, LS_KEY='tam_db_v1';
 var SHEET_MEMBERS=[{"id": "m1", "name": "আফাজ", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true, "2026-11": true}}, {"id": "m2", "name": "সাত্তার", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m3", "name": "জোসন", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true}}, {"id": "m4", "name": "অনিক", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m5", "name": "নীরব", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m6", "name": "রুমা", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m7", "name": "আদনান", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true}}, {"id": "m8", "name": "আনিশা", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m9", "name": "ফজল", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m10", "name": "আসলাম", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true}}, {"id": "m11", "name": "ইয়াসিন", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true, "2026-11": true}}, {"id": "m12", "name": "তোফাজ্জল", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m13", "name": "শহিদুল", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m14", "name": "লালচাঁন", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m15", "name": "কমলা", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m16", "name": "শাফিন", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true, "2026-11": true}}, {"id": "m17", "name": "ফাতেমা", "phone": "", "payments": {"2026-04": true, "2026-05": true}}, {"id": "m18", "name": "শাহাদত", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m19", "name": "মনির", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true, "2026-11": true}}, {"id": "m20", "name": "সুমন", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true, "2026-11": true}}, {"id": "m21", "name": "রহিম বাদশা", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true}}, {"id": "m22", "name": "মাজুম", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m23", "name": "ফয়সাল", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true}}, {"id": "m24", "name": "নবী", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m25", "name": "আল - আমিন", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}];
+var SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/1G6i2H-JdXltHpEzCoULA0T4zoVe5Ip3WT_b7YFP9Mgw/gviz/tq?tqx=out:csv&sheet=Sheet1';
 var db=loadDB();
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
@@ -155,7 +156,23 @@ function deleteMember(id){
 function exportBackup(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));a.download='tam-backup.json';a.click()}
 function importBackup(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var d=JSON.parse(r.result);if(d&&Array.isArray(d.members)){db=d;saveDB();alert('ব্যাকআপ লোড হয়েছে।')}else alert('ভুল ফাইল।')}catch(e){alert('ভুল ফাইল।')}};r.readAsText(f)}
 function clearAllData(){if(!canEdit()){alert('Viewer শুধু দেখতে পারবে।');return} if(!confirm('সব ডেটা মুছে যাবে। নিশ্চিত?'))return; db={members:[]}; saveDB();}
+
+function parseCSV(text){var rows=[],row=[],cur='',q=false;for(var i=0;i<text.length;i++){var c=text[i];if(q){if(c=='"'){if(text[i+1]=='"'){cur+='"';i++}else q=false}else cur+=c}else{if(c=='"')q=true;else if(c==','){row.push(cur);cur=''}else if(c=='\n'){row.push(cur);rows.push(row);row=[];cur=''}else if(c!='\r')cur+=c}}if(cur!==''||row.length){row.push(cur);rows.push(row)}return rows}
+function fetchSheet(){
+  if(!SHEET_CSV_URL) return;
+  fetch(SHEET_CSV_URL).then(function(r){return r.text()}).then(function(text){
+    var rows=parseCSV(text); var members=[];
+    rows.slice(1).forEach(function(r,i){
+      var name=(r[1]||'').trim(); if(!name) return;
+      var pay={}; MONTHS.forEach(function(mo,idx){var cell=(r[2+idx]||'').replace(/\s/g,''); if(cell) pay[mo.k]=true});
+      members.push({id:'m'+(i+1),name:name,phone:'',payments:pay});
+    });
+    if(members.length){db={members:members}; try{localStorage.setItem(LS_KEY,JSON.stringify(db))}catch(e){} render(); var s=$('sheetStatus'); if(s)s.innerHTML='<small>✅ শিট থেকে লাইভ লোড হয়েছে — শিটে এন্ট্রি দিলে রিফ্রেশ করলেই সাইটে দেখাবে।</small>';}
+  }).catch(function(){var s=$('sheetStatus'); if(s)s.innerHTML='<small>শিট লোড হয়নি, সংরক্ষিত ডেটা দেখাচ্ছে।</small>';});
+}
 render();
+fetchSheet();
+setInterval(fetchSheet, 300000);
 </script>
 <script src="js/cloud.js"></script>
 </body>
