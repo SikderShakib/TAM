@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAM — গরু সমিতি</title>
+<style>
+*{box-sizing:border-box} body{font-family:system-ui,'Noto Sans Bengali',sans-serif;margin:0;background:#f1f5f9;color:#0f172a}
+header{background:#14532d;color:#fff;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+header h1{margin:0;font-size:26px} header p{margin:4px 0 0;opacity:.9}
+.wrap{max-width:1100px;margin:0 auto;padding:18px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.card b{font-size:24px;display:block}.card span{color:#64748b;font-size:13px}
+.bar{height:10px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:#16a34a}
+.panel{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:16px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:900px;font-size:14px}
+th,td{padding:8px;border-bottom:1px solid #e2e8f0;text-align:center} th:first-child,td:first-child,td:nth-child(2){text-align:left}
+th{background:#f8fafc}
+.paid{background:#dcfce7;color:#166534;font-weight:700;cursor:pointer}
+.unpaid{background:#fef2f2;color:#991b1b;cursor:pointer}
+button,.btn{background:#14532d;color:#fff;border:0;border-radius:8px;padding:9px 14px;cursor:pointer;font-size:14px}
+button.secondary{background:#e2e8f0;color:#0f172a} button.danger{background:#dc2626} button:disabled{opacity:.5;cursor:not-allowed}
+input,select{padding:9px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700}
+.pill-green{background:#dcfce7;color:#166534}.pill-amber{background:#fef3c7;color:#92400e}.pill-gray{background:#e2e8f0;color:#475569}.pill-red{background:#fee2e2;color:#991b1b}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.box{background:#fff;border-radius:14px;padding:24px;width:100%;max-width:400px}
+.box input{width:100%;margin:6px 0}.hidden{display:none!important}
+small{color:#64748b} .flex{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#sync{font-size:13px;font-weight:700}
+</style>
+</head>
+<body>
+<header>
+<div><h1>🐄 TAM — গরু সমিতি</h1><p>প্রতি মাসে ৫০০ টাকা × ১২ মাস = জনপ্রতি ৬,০০০ টাকা</p></div>
+<div class="flex"><span id="sync"></span><span id="userChip"></span><button id="logoutBtn" class="hidden" onclick="TAMCloud.signOut()">লগআউট</button></div>
+</header>
+<div class="wrap">
+<div class="cards">
+<div class="card"><span>সদস্য সংখ্যা</span><b id="cMembers">০</b></div>
+<div class="card"><span>মোট জমা হয়েছে</span><b id="cCollected">৳ ০</b></div>
+<div class="card"><span>লক্ষ্য (২৫ জন × ৬,০০০)</span><b>৳ ১,৫০,০০০</b></div>
+<div class="card"><span>বাকি (লক্ষ্য থেকে)</span><b id="cDue">৳ ১,৫০,০০০</b><div class="bar"><i id="cBar" style="width:0%"></i></div></div>
+</div>
+
+<div class="panel">
+<h2 style="margin-top:0">সদস্য যোগ করুন <small>(শুধু Admin)</small></h2>
+<div class="flex">
+<input id="mName" placeholder="সদস্যের নাম *">
+<input id="mPhone" placeholder="ফোন নম্বর (ঐচ্ছিক)">
+<button onclick="addMember()">+ যোগ করুন</button>
+</div>
+<p><small>টিপস: মাসের ঘরে ক্লিক করলেই ৫০০ টাকা জমা / বাতিল হবে। সবুজ = জমা হয়েছে, লাল = বাকি।</small></p>
+</div>
+
+<div class="panel">
+<h2 style="margin-top:0">জমার হিসাব — নভেম্বর ২০২৬ থেকে অক্টোবর ২০২৭</h2>
+<table><thead><tr id="theadRow"></tr></thead><tbody id="tbody"></tbody></table>
+<p id="noData" class="hidden">এখনো কোনো সদস্য যোগ করা হয়নি। উপরে নাম লিখে যোগ করুন।</p>
+</div>
+
+<div class="panel" id="settingsPanel">
+<h2 style="margin-top:0">ক্লাউড / টিম সেটিংস</h2>
+<div id="cloudCardBody"></div>
+<div class="flex" style="margin-top:12px">
+<button class="secondary" onclick="exportBackup()">ব্যাকআপ ডাউনলোড (JSON)</button>
+<label class="btn secondary" style="cursor:pointer">ব্যাকআপ ইমপোর্ট <input type="file" accept=".json" class="hidden" onchange="importBackup(event)"></label>
+<button class="danger" onclick="clearAllData()">সব ডেটা মুছুন</button>
+</div>
+<p><small>ক্লাউড চালু না থাকলে ডেটা শুধু এই ব্রাউজারে থাকবে। ক্লাউড চালু করতে CLOUD_SETUP.md দেখুন — নতুন Firebase প্রজেক্ট বানিয়ে config বসাতে হবে। OTW প্রজেক্টের সাথে মেশাবেন না।</small></p>
+</div>
+</div>
+
+<div id="loginOverlay" class="overlay hidden"><div class="box">
+<h2 id="loginTitleText">লগইন</h2>
+<p id="loginError" class="hidden" style="color:#dc2626"></p>
+<form id="loginForm"><input id="loginEmail" type="email" placeholder="ইমেইল" required>
+<input id="loginPass" type="password" placeholder="পাসওয়ার্ড" required>
+<button id="loginSubmit" style="width:100%;margin-top:8px">লগইন</button></form>
+<p><span id="loginToggleText">অ্যাকাউন্ট নেই?</span> <a href="#" id="loginToggle">সাইন আপ</a></p>
+<p><a href="#" id="loginDemoLink">লোকাল ডেমো মোডে চালিয়ে যান</a></p>
+</div></div>
+
+<div id="pendingOverlay" class="overlay hidden"><div class="box">
+<h2>অনুমোদনের অপেক্ষায়</h2><p>আপনার অ্যাকাউন্ট (<b id="pendingEmail"></b>) এখনো Pending। Admin আপনাকে Viewer বা Admin করলে তবেই আপনি ডেটা দেখতে পারবেন।</p>
+<button onclick="TAMCloud.signOut()">লগআউট</button>
+</div></div>
+
+<script src="js/firebase-config.js"></script>
+<script>
+var MONTHS=[
+ {k:'2026-11',l:'নভে ২৬'},{k:'2026-12',l:'ডিসে ২৬'},{k:'2027-01',l:'জানু ২৭'},{k:'2027-02',l:'ফেব্রু ২৭'},
+ {k:'2027-03',l:'মার্চ ২৭'},{k:'2027-04',l:'এপ্রি ২৭'},{k:'2027-05',l:'মে ২৭'},{k:'2027-06',l:'জুন ২৭'},
+ {k:'2027-07',l:'জুলাই ২৭'},{k:'2027-08',l:'আগস্ট ২৭'},{k:'2027-09',l:'সেপ্টে ২৭'},{k:'2027-10',l:'অক্টো ২৭'}];
+var MONTH_FEE=500, LS_KEY='tam_db_v1';
+var db=loadDB();
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function loadDB(){try{var r=localStorage.getItem(LS_KEY);if(r){var d=JSON.parse(r);if(d&&Array.isArray(d.members))return d}}catch(e){} return {members:[]};}
+function saveDB(){try{localStorage.setItem(LS_KEY,JSON.stringify(db))}catch(e){} if(window.TAMCloud) TAMCloud.schedulePush(); render();}
+function isViewer(){return window.TAMCloud&&TAMCloud.getRole&&TAMCloud.getRole()==='viewer'}
+function canEdit(){return !isViewer()}
+function memberTotal(m){var t=0;MONTHS.forEach(function(mo){if(m.payments&&m.payments[mo.k])t+=MONTH_FEE});return t}
+function memberPaidCount(m){var t=0;MONTHS.forEach(function(mo){if(m.payments&&m.payments[mo.k])t++});return t}
+function render(){
+ var total=0; db.members.forEach(function(m){total+=memberTotal(m)});
+ $('cMembers').textContent=db.members.length;
+ $('cCollected').textContent='৳ '+total.toLocaleString('en-IN');
+ $('cDue').textContent='৳ '+Math.max(0,150000-total).toLocaleString('en-IN');
+ $('cBar').style.width=Math.min(100,total/150000*100)+'%';
+ var th='<th>সদস্য</th><th>ফোন</th>'; MONTHS.forEach(function(mo){th+='<th>'+mo.l+'</th>'});
+ th+='<th>মোট জমা</th><th>বাকি</th><th>অ্যাকশন</th>'; $('theadRow').innerHTML=th;
+ var html=''; db.members.forEach(function(m){
+  var tot=memberTotal(m);
+  html+='<tr><td><b>'+esc(m.name)+'</b></td><td>'+esc(m.phone||'-')+'</td>';
+  MONTHS.forEach(function(mo){var paid=m.payments&&m.payments[mo.k];html+='<td class="'+(paid?'paid':'unpaid')+'" onclick="togglePay(\''+m.id+'\',\''+mo.k+'\')">'+(paid?'✓ ৫০০':'—')+'</td>'});
+  html+='<td><b>৳ '+tot.toLocaleString('en-IN')+'</b> ('+memberPaidCount(m)+'/১২)</td><td>৳ '+(6000-tot).toLocaleString('en-IN')+'</td>';
+  html+='<td><button class="secondary" onclick="editMember(\''+m.id+'\')">এডিট</button> <button class="danger" onclick="deleteMember(\''+m.id+'\')">মুছুন</button></td></tr>';
+ });
+ $('tbody').innerHTML=html; $('noData').classList.toggle('hidden',db.members.length>0);
+}
+function addMember(){
+ if(!canEdit()){alert('Viewer শুধু দেখতে পারবে, এডিট করতে পারবে না।');return}
+ var name=$('mName').value.trim(), phone=$('mPhone').value.trim();
+ if(!name){alert('নাম লিখুন।');return}
+ db.members.push({id:'m'+Date.now(),name:name,phone:phone,payments:{}}); $('mName').value=''; $('mPhone').value=''; saveDB();
+}
+function togglePay(id,month){
+ if(!canEdit()){alert('Viewer শুধু দেখতে পারবে, এডিট করতে পারবে না।');return}
+ var m=db.members.find(function(x){return x.id===id}); if(!m)return;
+ m.payments=m.payments||{}; if(m.payments[month])delete m.payments[month]; else m.payments[month]=true; saveDB();
+}
+function editMember(id){
+ if(!canEdit()){alert('Viewer শুধু দেখতে পারবে।');return}
+ var m=db.members.find(function(x){return x.id===id}); if(!m)return;
+ var n=prompt('নাম:',m.name); if(n===null)return; var p=prompt('ফোন:',m.phone||''); if(p===null)return;
+ m.name=n.trim()||m.name; m.phone=p.trim(); saveDB();
+}
+function deleteMember(id){
+ if(!canEdit()){alert('Viewer শুধু দেখতে পারবে।');return}
+ if(!confirm('এই সদস্যকে মুছতে চান? তার সব জমার হিসাবও মুছে যাবে।'))return;
+ db.members=db.members.filter(function(x){return x.id!==id}); saveDB();
+}
+function exportBackup(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));a.download='tam-backup.json';a.click()}
+function importBackup(ev){var f=ev.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var d=JSON.parse(r.result);if(d&&Array.isArray(d.members)){db=d;saveDB();alert('ব্যাকআপ লোড হয়েছে।')}else alert('ভুল ফাইল।')}catch(e){alert('ভুল ফাইল।')}};r.readAsText(f)}
+function clearAllData(){if(!canEdit()){alert('Viewer শুধু দেখতে পারবে।');return} if(!confirm('সব ডেটা মুছে যাবে। নিশ্চিত?'))return; db={members:[]}; saveDB();}
+render();
+</script>
+<script src="js/cloud.js"></script>
+</body>
+</html>
