@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TAM — গরু সমিতি</title>
+<title>TAM - COW FUND — গরু সমিতি</title>
 <style>
 *{box-sizing:border-box} body{font-family:system-ui,'Noto Sans Bengali',sans-serif;margin:0;background:#f1f5f9;color:#0f172a}
 header{background:#14532d;color:#fff;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
@@ -33,7 +33,7 @@ small{color:#64748b} .flex{display:flex;gap:8px;flex-wrap:wrap;align-items:cente
 </head>
 <body>
 <header>
-<div><h1>🐄 TAM — গরু সমিতি</h1><p>প্রতি মাসে ৫০০ টাকা × ১২ মাস = জনপ্রতি ৬,০০০ টাকা</p></div>
+<div><h1>🐄 TAM - COW FUND</h1><p>গরু সমিতি • প্রতি মাসে ৫০০ টাকা × ১২ মাস = জনপ্রতি ৬,০০০ টাকা</p></div>
 <div class="flex"><span id="sync"></span><span id="userChip"></span><button id="logoutBtn" class="hidden" onclick="TAMCloud.signOut()">লগআউট</button></div>
 </header>
 <div class="wrap">
@@ -55,7 +55,7 @@ small{color:#64748b} .flex{display:flex;gap:8px;flex-wrap:wrap;align-items:cente
 </div>
 
 <div class="panel">
-<h2 style="margin-top:0">জমার হিসাব — নভেম্বর ২০২৬ থেকে অক্টোবর ২০২৭</h2>
+<h2 style="margin-top:0">জমার হিসাব — এপ্রিল ২০২৬ থেকে মার্চ ২০২৭ (TAM শিট থেকে)</h2>
 <table><thead><tr id="theadRow"></tr></thead><tbody id="tbody"></tbody></table>
 <p id="noData" class="hidden">এখনো কোনো সদস্য যোগ করা হয়নি। উপরে নাম লিখে যোগ করুন।</p>
 </div>
@@ -68,7 +68,7 @@ small{color:#64748b} .flex{display:flex;gap:8px;flex-wrap:wrap;align-items:cente
 <label class="btn secondary" style="cursor:pointer">ব্যাকআপ ইমপোর্ট <input type="file" accept=".json" class="hidden" onchange="importBackup(event)"></label>
 <button class="danger" onclick="clearAllData()">সব ডেটা মুছুন</button>
 </div>
-<p><small>ক্লাউড চালু না থাকলে ডেটা শুধু এই ব্রাউজারে থাকবে। ক্লাউড চালু করতে CLOUD_SETUP.md দেখুন — নতুন Firebase প্রজেক্ট বানিয়ে config বসাতে হবে। OTW প্রজেক্টের সাথে মেশাবেন না।</small></p>
+<p><small>এই সাইটের ডেটা TAM - cow fund শিট থেকে নেওয়া। শিট: <a href="https://docs.google.com/spreadsheets/d/1G6i2H-JdXltHpEzCoULA0T4zoVe5Ip3WT_b7YFP9Mgw/edit" target="_blank">TAM শিট খুলুন</a>। ক্লাউড চালু না থাকলে সাইটে করা এডিট শুধু এই ব্রাউজারে থাকবে। ক্লাউড চালু করতে CLOUD_SETUP.md দেখুন — নতুন Firebase প্রজেক্ট বানিয়ে config বসাতে হবে। OTW প্রজেক্টের সাথে মেশাবেন না।</small></p>
 </div>
 </div>
 
@@ -90,14 +90,24 @@ small{color:#64748b} .flex{display:flex;gap:8px;flex-wrap:wrap;align-items:cente
 <script src="js/firebase-config.js"></script>
 <script>
 var MONTHS=[
- {k:'2026-11',l:'নভে ২৬'},{k:'2026-12',l:'ডিসে ২৬'},{k:'2027-01',l:'জানু ২৭'},{k:'2027-02',l:'ফেব্রু ২৭'},
- {k:'2027-03',l:'মার্চ ২৭'},{k:'2027-04',l:'এপ্রি ২৭'},{k:'2027-05',l:'মে ২৭'},{k:'2027-06',l:'জুন ২৭'},
- {k:'2027-07',l:'জুলাই ২৭'},{k:'2027-08',l:'আগস্ট ২৭'},{k:'2027-09',l:'সেপ্টে ২৭'},{k:'2027-10',l:'অক্টো ২৭'}];
+ {k:'2026-04',l:'এপ্রি ২৬'},
+ {k:'2026-05',l:'মে ২৬'},
+ {k:'2026-06',l:'জুন ২৬'},
+ {k:'2026-07',l:'জুলাই ২৬'},
+ {k:'2026-08',l:'আগস্ট ২৬'},
+ {k:'2026-09',l:'সেপ্টে ২৬'},
+ {k:'2026-10',l:'অক্টো ২৬'},
+ {k:'2026-11',l:'নভে ২৬'},
+ {k:'2026-12',l:'ডিসে ২৬'},
+ {k:'2027-01',l:'জানু ২৭'},
+ {k:'2027-02',l:'ফেব্রু ২৭'},
+ {k:'2027-03',l:'মার্চ ২৭'}];
 var MONTH_FEE=500, LS_KEY='tam_db_v1';
+var SHEET_MEMBERS=[{"id": "m1", "name": "আফাজ", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true, "2026-11": true}}, {"id": "m2", "name": "সাত্তার", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m3", "name": "জোসন", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true}}, {"id": "m4", "name": "অনিক", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m5", "name": "নীরব", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m6", "name": "রুমা", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m7", "name": "আদনান", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true}}, {"id": "m8", "name": "আনিশা", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m9", "name": "ফজল", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m10", "name": "আসলাম", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true}}, {"id": "m11", "name": "ইয়াসিন", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true, "2026-11": true}}, {"id": "m12", "name": "তোফাজ্জল", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m13", "name": "শহিদুল", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m14", "name": "লালচাঁন", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m15", "name": "কমলা", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m16", "name": "শাফিন", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true, "2026-11": true}}, {"id": "m17", "name": "ফাতেমা", "phone": "", "payments": {"2026-04": true, "2026-05": true}}, {"id": "m18", "name": "শাহাদত", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m19", "name": "মনির", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true, "2026-11": true}}, {"id": "m20", "name": "সুমন", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true, "2026-11": true}}, {"id": "m21", "name": "রহিম বাদশা", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true}}, {"id": "m22", "name": "মাজুম", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m23", "name": "ফয়সাল", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true}}, {"id": "m24", "name": "নবী", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}, {"id": "m25", "name": "আল - আমিন", "phone": "", "payments": {"2026-04": true, "2026-05": true, "2026-06": true, "2026-07": true, "2026-08": true, "2026-09": true, "2026-10": true}}];
 var db=loadDB();
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-function loadDB(){try{var r=localStorage.getItem(LS_KEY);if(r){var d=JSON.parse(r);if(d&&Array.isArray(d.members))return d}}catch(e){} return {members:[]};}
+function loadDB(){try{var r=localStorage.getItem(LS_KEY);if(r){var d=JSON.parse(r);if(d&&Array.isArray(d.members)&&d.members.length>0)return d}}catch(e){} return {members:[]};}
 function saveDB(){try{localStorage.setItem(LS_KEY,JSON.stringify(db))}catch(e){} if(window.TAMCloud) TAMCloud.schedulePush(); render();}
 function isViewer(){return window.TAMCloud&&TAMCloud.getRole&&TAMCloud.getRole()==='viewer'}
 function canEdit(){return !isViewer()}
