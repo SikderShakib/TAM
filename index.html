@@ -108,6 +108,8 @@ var SHEET_CSV_URL='https://docs.google.com/spreadsheets/d/1G6i2H-JdXltHpEzCoULA0
 var db=loadDB();
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function bn(n){return String(n).replace(/[0-9]/g,function(d){return '০১২৩৪৫৬৭৮৯'[+d]})}
+function bnMoney(n){return bn(n.toLocaleString('en-IN'))}
 function loadDB(){try{var r=localStorage.getItem(LS_KEY);if(r){var d=JSON.parse(r);if(d&&Array.isArray(d.members)&&d.members.length>0)return d}}catch(e){} return {members:[]};}
 function saveDB(){try{localStorage.setItem(LS_KEY,JSON.stringify(db))}catch(e){} if(window.TAMCloud) TAMCloud.schedulePush(); render();}
 function isViewer(){return window.TAMCloud&&TAMCloud.getRole&&TAMCloud.getRole()==='viewer'}
@@ -116,17 +118,17 @@ function memberTotal(m){var t=0;MONTHS.forEach(function(mo){if(m.payments&&m.pay
 function memberPaidCount(m){var t=0;MONTHS.forEach(function(mo){if(m.payments&&m.payments[mo.k])t++});return t}
 function render(){
  var total=0; db.members.forEach(function(m){total+=memberTotal(m)});
- $('cMembers').textContent=db.members.length;
- $('cCollected').textContent='৳ '+total.toLocaleString('en-IN');
- $('cDue').textContent='৳ '+Math.max(0,150000-total).toLocaleString('en-IN');
+ $('cMembers').textContent=bn(db.members.length);
+ $('cCollected').textContent='৳ '+bnMoney(total);
+ $('cDue').textContent='৳ '+bnMoney(Math.max(0,150000-total));
  $('cBar').style.width=Math.min(100,total/150000*100)+'%';
  var th='<th>সিরিয়াল</th><th>সদস্য</th><th>ফোন</th>'; MONTHS.forEach(function(mo){th+='<th>'+mo.l+'</th>'});
  th+='<th>মোট জমা</th><th>বাকি</th><th>অ্যাকশন</th>'; $('theadRow').innerHTML=th;
  var html=''; db.members.forEach(function(m,idx){
   var tot=memberTotal(m);
-  html+='<tr><td>'+(idx+1)+'</td><td><b>'+esc(m.name)+'</b></td><td>'+esc(m.phone||'-')+'</td>';
+  html+='<tr><td>'+bn(idx+1)+'</td><td><b>'+esc(m.name)+'</b></td><td>'+esc(m.phone||'-')+'</td>';
   MONTHS.forEach(function(mo){var paid=m.payments&&m.payments[mo.k];html+='<td class="'+(paid?'paid':'unpaid')+'" onclick="togglePay(\''+m.id+'\',\''+mo.k+'\')">'+(paid?'✓ ৫০০':'—')+'</td>'});
-  html+='<td><b>৳ '+tot.toLocaleString('en-IN')+'</b> ('+memberPaidCount(m)+'/১২)</td><td>৳ '+(6000-tot).toLocaleString('en-IN')+'</td>';
+  html+='<td><b>৳ '+bnMoney(tot)+'</b> ('+bn(memberPaidCount(m))+'/১২)</td><td>৳ '+bnMoney(6000-tot)+'</td>';
   html+='<td><button class="secondary" onclick="editMember(\''+m.id+'\')">এডিট</button> <button class="danger" onclick="deleteMember(\''+m.id+'\')">মুছুন</button></td></tr>';
  });
  $('tbody').innerHTML=html; $('noData').classList.toggle('hidden',db.members.length>0);
